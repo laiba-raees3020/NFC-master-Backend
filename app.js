@@ -1,11 +1,30 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const mongoose = require('mongoose');
+
+const authRoutes = require('./routes/auth-routes');
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.listen(6000 || process.env.PORT, () => {
-  console.log('Running On Port: 6000');
-});
+//? === Authentication ===
+
+app.use(authRoutes);
+
+//? === Database Connection ===
+
+mongoose
+  .connect(process.env.MONGODB_KEY)
+  .then(() => {
+    app.listen(6000 || process.env.PORT, () => {
+      console.log('Running On Port: 6000');
+    });
+  })
+  .catch((err) => {
+    console.error(err);
+  });
+
+//------------------------------------------------------------
