@@ -7,6 +7,10 @@ const authRoutes = require('./routes/auth-routes');
 
 const app = express();
 
+app.get('/', (req, res, next) => {
+  res.send({ message: 'Hello NFC Master Backend' });
+});
+
 app.use(express.json());
 app.use(cors());
 
