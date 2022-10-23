@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userSchema = mongoose.Schema(
+const departmentSchema = mongoose.Schema(
   {
     department_name: String,
     department_abbreviation: String,
@@ -14,4 +14,4 @@ const userSchema = mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Department', departmentSchema);

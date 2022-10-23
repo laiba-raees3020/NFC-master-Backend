@@ -23,11 +23,12 @@ class ExpressApp {
 
     //? === Department ===
     this.app.use(departmentRoutes);
+
     new RouteMessage('GET', '/');
     new RouteMessage('POST', '/api/student/register');
     new RouteMessage('POST', '/api/login');
-    new RouteMessage('GET', '/api/department/register');
-    new RouteMessage('POST', '/api/department/register');
+    new RouteMessage('GET', '/api/departments');
+    new RouteMessage('POST', '/api/departments');
   }
 
   runApp() {
