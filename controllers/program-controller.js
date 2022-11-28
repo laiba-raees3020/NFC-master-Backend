@@ -22,7 +22,7 @@ const registerProgram = async (req, res, next) => {
     });
   } catch (e) {
     console.error(e);
-    const error = new HttpError('Something went wrong', 500, 'department');
+    const error = new HttpError('Something went wrong', 500, 'program');
     return next(error);
   }
 };

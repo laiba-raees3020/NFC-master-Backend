@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userSchema = mongoose.Schema(
+const studentSchema = mongoose.Schema(
   {
     name: String,
     email: String,
@@ -29,6 +29,6 @@ const parentSchema = mongoose.Schema(
 );
 
 module.exports = {
-  User: mongoose.model('User', userSchema),
+  User: mongoose.model('Student', studentSchema),
   Parent: mongoose.model('Parent', parentSchema),
 };

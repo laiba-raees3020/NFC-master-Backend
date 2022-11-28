@@ -1,0 +1,464 @@
+<!-- <details>
+      <summary class="get">GET <code>/articles</code></summary>
+      <div>
+        <p>Get all articles</p>
+        <h4>Response</h4>
+        <pre>
+          <code>
+              "status": Number,
+              "message": String,
+              "articles": [
+                {
+                  "_id": String,
+                  "title": String,
+                  "author": String,
+                  "author_avatar": String,
+                  "content": String,
+                  "additions": [
+                    {
+                      "avatar": String,
+                      "name": String,
+                      "comment": String
+                    }
+                  ]
+                }
+              ]
+        </code>
+      </pre>
+      </div>
+    </details> -->
+<!-- <details>
+        <summary class="patch">PATCH <code>/articles/{id}</code></summary>
+        <div>
+          <p>Patch existing article</p>
+          <h4>Request</h4>
+          <pre>
+            <code> 
+            {
+              "avatar": String,
+              "name": String,
+              "comment": String,
+            },
+            Authorization: Bearer {token}
+          </code>
+        </pre>
+          <h4>Response</h4>
+          <pre>
+            <code>
+              {
+                "status": Number,
+                "message": String
+              }
+          </code>
+        </pre>
+        </div>
+      </details> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Corinthia:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <title>API Endpoints</title>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 10px;
+      background-color: rgb(255, 255, 255);
+      color: rgb(0, 0, 0);
+    }
+    h1,
+    h2,
+    h3 {
+      font-family: 'Indie Flower', cursive;
+      text-align: center;
+    }
+    h4,
+    h5,
+    h6,
+    p {
+      font-family: 'Montserrat', sans-serif;
+      background-color: transparent;
+    }
+    details {
+      margin: 20px 0;
+    }
+    summary {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 1.8rem;
+      color: whitesmoke;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    div {
+      padding: 15px;
+      margin-top: 30px;
+    }
+    hr {
+      border-top: 3px dashed rgb(0, 0, 0);
+      margin: 0 150px;
+      border-bottom: none;
+      border-left: none;
+      border-right: none;
+    }
+    code {
+      background-color: transparent;
+      color: whitesmoke;
+    }
+    pre {
+      border-radius: 15px;
+      font-size: 1rem;
+      background-color: rgb(117, 107, 89);
+    }
+    details[open] summary ~ * {
+      animation: sweep 0.5s ease-in-out;
+    }
+
+    @keyframes sweep {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
+    .get {
+      background-color: rgb(51, 54, 206);
+      border-radius: 15px;
+      box-shadow: 0px 0px 15px rgb(51, 54, 206);
+    }
+    .post {
+      background-color: rgb(51, 206, 51);
+      border-radius: 15px;
+      box-shadow: 0px 0px 15px rgb(51, 206, 51);
+    }
+    .patch {
+      background-color: rgb(206, 51, 134);
+      border-radius: 15px;
+      box-shadow: 0px 0px 15px rgb(206, 51, 134);
+    }
+    .error {
+      background-color: rgb(201, 47, 47);
+      border-radius: 15px;
+      box-shadow: 0px 0px 15px rgb(201, 47, 47);
+    }
+  </style>
+  <body>
+    <h1>NFC Master Api Information</h1>
+    <h3>Append the endpoint given at the left side of methods to the URL</h3>
+    <hr />
+    <details>
+      <summary class="error">Errors</summary>
+      <div>
+        <p>All errors you will recieve from all endpoints</p>
+        <h4>Response</h4>
+        <pre>
+          <code>
+              {
+                "message": String,
+                "statusCode": Number,
+                "type": String
+              }
+        </code>
+      </pre>
+      </div>
+    </details>
+    <hr />
+    <h2>DEPARTMENTS</h2>
+    <details>
+      <summary class="post">POST <code>/api/departments</code></summary>
+      <div>
+        <p>Register New Department</p>
+        <h4>Request</h4>
+        <pre>
+          <code> 
+          {
+            "department_name": String,
+            "department_abbreviation": String,
+            "no_of_programs": Number,
+            "lat": Number,
+            "lng": Number
+          }
+          Authorization: Bearer {token}
+        </code>
+      </pre>
+        <h4>Response</h4>
+        <pre>
+          <code>
+            {
+              "statusCode": Number,
+              "message": String
+            }
+        </code>
+      </pre>
+      </div>
+    </details>
+    <hr />
+    <h2>PROGRAMS</h2>
+    <details>
+      <summary class="post">POST <code>/api/programs</code></summary>
+      <div>
+        <p>Register New Program</p>
+        <h4>Request</h4>
+        <pre>
+          <code> 
+          {
+            "program_title": String,
+            "type": String,
+            "starting": Date,
+            "ending": Date,
+            "department": Department Ref Id
+          }
+          Authorization: Bearer {token}
+        </code>
+      </pre>
+        <h4>Response</h4>
+        <pre>
+          <code>
+            {
+              "statusCode": Number,
+              "message": String
+            }
+        </code>
+      </pre>
+      </div>
+    </details>
+    <hr />
+    <h2>SESSIONS</h2>
+    <details>
+      <summary class="post">POST <code>/api/sessions</code></summary>
+      <div>
+        <p>Register New Session</p>
+        <h4>Request</h4>
+        <pre>
+          <code> 
+          {
+            "session_title": String,
+            "type": String,
+            "starting_year": String,
+            "ending_year": String,
+            "department": Department Ref Id,
+            "program": Program Ref Id
+          }
+          Authorization: Bearer {token}
+        </code>
+      </pre>
+        <h4>Response</h4>
+        <pre>
+          <code>
+            {
+              "statusCode": Number,
+              "message": String
+            }
+        </code>
+      </pre>
+      </div>
+    </details>
+    <hr />
+    <h2>SEMESTERS</h2>
+    <details>
+      <summary class="post">POST <code>/api/semesters</code></summary>
+      <div>
+        <p>Register New Semester</p>
+        <h4>Request</h4>
+        <pre>
+          <code> 
+          {
+            "semester_title": String,
+            "type": String,
+            "starting_year": String,
+            "ending_year": String,
+            "department": Department Ref Id,
+            "program": Program Ref Id,
+            "session": Session Ref Id
+          }
+          Authorization: Bearer {token}
+        </code>
+      </pre>
+        <h4>Response</h4>
+        <pre>
+          <code>
+            {
+              "statusCode": Number,
+              "message": String
+            }
+        </code>
+      </pre>
+      </div>
+    </details>
+    <hr />
+    <h2>SUBJECT</h2>
+    <details>
+      <summary class="post">POST <code>/api/subjects</code></summary>
+      <div>
+        <p>Register New Subject</p>
+        <h4>Request</h4>
+        <pre>
+          <code> 
+          {
+            "subject_title": String,
+            "type": String,
+            "subject_code": String,
+            "theory_hours": Number,
+            "lab_hours": Number,
+            "department": Department Ref Id,
+            "program": Program Ref Id,
+            "session": Session Ref Id,
+            "semester": Semester Ref Id
+          }
+          Authorization: Bearer {token}
+        </code>
+      </pre>
+        <h4>Response</h4>
+        <pre>
+          <code>
+            {
+              "statusCode": Number,
+              "message": String
+            }
+        </code>
+      </pre>
+      </div>
+    </details>
+    <hr />
+    <h2>SUBJECT STUDENTS</h2>
+    <details>
+      <summary class="post">POST <code>/api/subject-students</code></summary>
+      <div>
+        <p>Register Students in Subject</p>
+        <h4>Request</h4>
+        <pre>
+          <code> 
+          {
+            "students": [Student Ref Id],
+            "department": Department Ref Id,
+            "program": Program Ref Id,
+            "session": Session Ref Id,
+            "semester": Semester Ref Id,
+            "subject": Subject Ref Id
+          }
+          Authorization: Bearer {token}
+        </code>
+      </pre>
+        <h4>Response</h4>
+        <pre>
+          <code>
+            {
+              "statusCode": Number,
+              "message": String
+            }
+        </code>
+      </pre>
+      </div>
+    </details>
+    <hr />
+    <h2>SUBJECT TEACHERS</h2>
+    <details>
+      <summary class="post">POST <code>/api/subject-teachers</code></summary>
+      <div>
+        <p>Register Students in Subject</p>
+        <h4>Request</h4>
+        <pre>
+          <code> 
+          {
+            "teachers": [Teacher Ref Id],
+            "department": Department Ref Id,
+            "program": Program Ref Id,
+            "session": Session Ref Id,
+            "semester": Semester Ref Id,
+            "subject": Subject Ref Id
+          }
+          Authorization: Bearer {token}
+        </code>
+      </pre>
+        <h4>Response</h4>
+        <pre>
+          <code>
+            {
+              "statusCode": Number,
+              "message": String
+            }
+        </code>
+      </pre>
+      </div>
+    </details>
+    <hr />
+    <!-- <h2>AUTHENTICATION</h2>
+    <details>
+      <summary class="post">POST <code>/login</code></summary>
+      <div>
+        <p>Login existing user</p>
+        <h4>Request</h4>
+        <pre>
+          <code> 
+          {
+            "email": String,
+            "password": String
+          }
+        </code>
+      </pre>
+        <h4>Response</h4>
+        <pre>
+          <code> 
+          {
+            "status": Number,
+            "message": String,
+            "user-info": {
+              "_id": String,
+              "name": String,
+              "email": String,
+              "avatar": String
+            },
+            "token": String
+          }
+        </code>
+      </pre>
+      </div>
+    </details>
+    <details>
+      <summary class="post">POST <code>/register</code></summary>
+      <div>
+        <p>Register new user</p>
+        <h4>Request</h4>
+        <pre>
+          <code> 
+          {
+            "email": String,
+            "name": String,
+            "password": String
+          }
+        </code>
+      </pre>
+        <h4>Response</h4>
+        <pre>
+          <code> 
+          {
+            "status": Number,
+            "message": String,
+            "user-info": {
+              "_id": String,
+              "name": String,
+              "email": String,
+              "avatar": String
+            },
+            "token": String
+          }
+        </code>
+      </pre>
+      </div>
+    </details> -->
+  </body>
+</html>
