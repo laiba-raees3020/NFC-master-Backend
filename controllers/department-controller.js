@@ -1,4 +1,4 @@
-const Department = require('../models/department-model');
+const Model = require('../models/department-model');
 const HttpError = require('../utils/HttpError');
 
 const registerDepartment = async (req, res, next) => {
@@ -19,7 +19,7 @@ const registerDepartment = async (req, res, next) => {
     }
   }
 
-  const department = Department({
+  const department = Model({
     department_name,
     department_abbreviation,
     no_of_programs,

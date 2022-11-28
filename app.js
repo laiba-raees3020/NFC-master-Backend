@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 
 const authRoutes = require('./routes/auth-routes');
 const departmentRoutes = require('./routes/department-routes');
+const programRoutes = require('./routes/program-routes');
 const RouteMessage = require('./utils/RouteMessage');
 
 class ExpressApp {
@@ -24,11 +25,15 @@ class ExpressApp {
     //? === Department ===
     this.app.use(departmentRoutes);
 
+    //? === Program ===
+    this.app.use(programRoutes);
+
     new RouteMessage('GET', '/');
     new RouteMessage('POST', '/api/student/register');
     new RouteMessage('POST', '/api/login');
-    new RouteMessage('GET', '/api/departments');
+    // new RouteMessage('GET', '/api/departments');
     new RouteMessage('POST', '/api/departments');
+    new RouteMessage('POST', '/api/programs');
   }
 
   runApp() {
