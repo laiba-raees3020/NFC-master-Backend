@@ -29,6 +29,6 @@ const parentSchema = mongoose.Schema(
 );
 
 module.exports = {
-  User: mongoose.model('Student', studentSchema),
+  Student: mongoose.model('Student', studentSchema),
   Parent: mongoose.model('Parent', parentSchema),
 };

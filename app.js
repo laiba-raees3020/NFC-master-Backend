@@ -2,6 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoDBSession = require('connect-mongodb-session')(session);
 
 const authRoutes = require('./routes/auth-routes');
 const departmentRoutes = require('./routes/department-routes');
@@ -12,12 +14,40 @@ const subjectRoutes = require('./routes/subject-routes');
 const subjectStudentsRoutes = require('./routes/subject-students-routes');
 const subjectTeachersRoutes = require('./routes/subject-teachers-routes');
 const RouteMessage = require('./utils/RouteMessage');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 
 class ExpressApp {
   constructor() {
+    const store = new MongoDBSession({
+      uri: process.env.MONGODB_KEY,
+      collection: 'authSessions',
+    });
     this.app = express();
     this.app.use(express.json());
-    this.app.use(cors());
+    this.app.use(
+      cors({
+        origin: ['http://localhost:3000'],
+        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+        credentials: true,
+      })
+    );
+    this.app.use(cookieParser());
+    this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(
+      session({
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        store,
+        cookie: {
+          maxAge: 60 * 60 * 24,
+          sameSite: 'none',
+          httpOnly: true,
+          secure: true,
+        },
+      })
+    );
   }
 
   registerRoutes() {
@@ -72,13 +102,9 @@ class ExpressApp {
         let port;
         if (process.env.PORT) port = process.env.PORT;
         else port = 6000;
-        this.app.listen(port, () => {
-          console.log(`Running On Port: ${port}`);
-        });
+        this.app.listen(port, () => console.log(`Running On Port: ${port}`));
       })
-      .catch((err) => {
-        console.error(err);
-      });
+      .catch((err) => console.error(err));
 
     //------------------------------------------------------------
   }

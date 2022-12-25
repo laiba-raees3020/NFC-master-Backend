@@ -1,18 +1,16 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 
-const { User } = require('../models/user-models');
-const { genToken } = require('../utils/generate-token');
+const { Student } = require('../models/user-models');
 const HttpError = require('../utils/HttpError');
 
-const saltRounds = 10;
 const emailRegexp =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-//? === Register User ===
+//? === Register Student ===
 
 const registerStudent = async (req, res, next) => {
-  let existingUser;
+  let existingStudent;
   let token;
   let avatar;
 
@@ -43,9 +41,9 @@ const registerStudent = async (req, res, next) => {
     return next(error);
   }
 
-  if (password.length < 6) {
+  if (password.length < 8) {
     const error = new HttpError(
-      'Password should be more than 6 Characters',
+      'Password should be more than 8 Characters',
       404,
       'password'
     );
@@ -53,30 +51,31 @@ const registerStudent = async (req, res, next) => {
     return next(error);
   }
 
-  // ! Checking If User with same email already exists
+  // ! Checking If Student with same email already exists
   try {
-    existingUser = await User.findOne({ email: email });
+    existingStudent = await Student.findOne({ email: email });
   } catch (err) {
     const error = new HttpError('Something went wrong', 500, 'email');
-    console.error(error);
+    console.error(err);
     return next(error);
   }
 
-  if (existingUser) {
+  if (existingStudent) {
     const error = new HttpError('Email already in use', 403, 'email');
     console.error(error);
     return next(error);
   }
   //!-------------------------------------------------------
 
-  // !Creating New User and generating a token with JWT
+  // !Creating New Student
+  const saltRounds = await bcrypt.genSalt(10);
   bcrypt.hash(password, saltRounds, async (e, hash) => {
     if (e) {
       console.error('Bcrypt: While hashing', e);
       const error = new HttpError('Something went wrong', 500, 'password');
       return next(error);
     }
-    const user = User({
+    const user = Student({
       name,
       email,
       password: hash,
@@ -92,9 +91,8 @@ const registerStudent = async (req, res, next) => {
     try {
       await user.save();
 
-      token = genToken(user, next);
-
       const {
+        _id: id,
         name,
         email,
         avatar,
@@ -106,10 +104,25 @@ const registerStudent = async (req, res, next) => {
         role,
       } = user;
 
+      req.session.isAuth = true;
+      req.session.user = {
+        id,
+        name,
+        email,
+        avatar,
+        section,
+        session,
+        program,
+        rollNo,
+        phoneNo,
+        role,
+      };
+
       res.send({
         status: 202,
         message: 'Successfully Registered',
         'user-info': {
+          id,
           name,
           email,
           avatar,
@@ -120,7 +133,6 @@ const registerStudent = async (req, res, next) => {
           phoneNo,
           role,
         },
-        token: token,
       });
     } catch (err) {
       console.error('While Saving User', err);
@@ -137,58 +149,67 @@ const registerStudent = async (req, res, next) => {
 
 //-------------------------------------------------------
 
+//? === Is User Logged In ===
+const checkAuth = async (req, res, next) => {
+  if (req.session.user) res.send({ loggedIn: true, user: req.session.user });
+  else res.send({ loggedIn: false });
+};
+
 //? === Login User ===
 
 const login = async (req, res, next) => {
-  let token;
   const { email, password } = req.body;
   try {
-    await User.findOne({ email: email }, (err, foundUser) => {
-      if (!err) {
-        if (foundUser) {
-          bcrypt.compare(password, foundUser.password, async (e, result) => {
-            if (result) {
-              token = await genToken(foundUser);
-              res.send({
-                status: 202,
-                message: 'Login Successful',
-                'user-info': {
-                  _id: foundUser._id,
-                  name: foundUser.name,
-                  email: foundUser.email,
-                  avatar: foundUser.avatar,
-                },
-                token,
-              });
-            } else {
-              console.error(e);
-              return res.send({
-                message: "Passwords Don't Match",
-                status: 404,
-              });
-            }
+    const foundUser = await Student.findOne({ email: email });
+    if (foundUser) {
+      bcrypt.compare(password, foundUser.password, async (e, result) => {
+        if (result) {
+          req.session.isAuth = true;
+          req.session.user = {
+            id: foundUser._id,
+            name: foundUser.name,
+            email: foundUser.email,
+            avatar: foundUser.avatar,
+            phoneNo: foundUser.phoneNo,
+            role: foundUser.role,
+            rollNo: foundUser.rollNo,
+            section: foundUser.section,
+            session: foundUser.session,
+            createdAt: foundUser.createdAt,
+            updatedAt: foundUser.updatedAt,
+          };
+          res.send({
+            status: 202,
+            message: 'Login Successful',
+            'user-info': {
+              id: foundUser._id,
+              name: foundUser.name,
+              email: foundUser.email,
+              avatar: foundUser.avatar,
+              phoneNo: foundUser.phoneNo,
+              role: foundUser.role,
+              rollNo: foundUser.rollNo,
+              section: foundUser.section,
+              session: foundUser.session,
+              createdAt: foundUser.createdAt,
+              updatedAt: foundUser.updatedAt,
+            },
           });
         } else {
-          console.error(err);
-          return res.send({
-            message: 'Invalid Email',
-            status: 404,
-          });
+          console.error(e);
+          const error = new HttpError("Passwords Don't Match", 404, 'password');
+          return next(error);
         }
-      } else {
-        console.error(err);
-        return res.send({
-          message: 'Something went wrong',
-          status: 500,
-        });
-      }
-    });
+      });
+    } else {
+      console.error(err);
+      const error = new HttpError('Invalid Email', 404, 'email');
+      return next(error);
+    }
   } catch (err) {
     console.error(err);
-    return res.send({
-      message: 'Something went wrong',
-      status: 500,
-    });
+    const error = new HttpError('Something went wrong', 500, 'server');
+    return next(error);
   }
 };
 
@@ -197,4 +218,5 @@ const login = async (req, res, next) => {
 module.exports = {
   login,
   registerStudent,
+  checkAuth,
 };
